@@ -2,26 +2,30 @@ import axios from "axios";
 import { BASE_URL } from "../utils/constants";
 import { useDispatch, useSelector } from "react-redux";
 import { addFeed } from "../utils/feedSlice";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import UserCard from "../components/UserCard";
+import { useNavigate } from "react-router-dom";
 
 const Feed = () => {
   const feed = useSelector((store) => store.feed);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const getFeed = async () => {
-    if (feed) return;
+    if (feed) {
+      return;
+    }
     try {
       const res = await axios.get(BASE_URL + "user/feed", {
         withCredentials: true,
       });
       dispatch(addFeed(res?.data?.data));
     } catch (err) {
-        if (error.status === 401) {
+        if (err.status === 401) {
             navigate("/login");
         } else {
             navigate("/error");
-            console.error(error);
+            console.error(err);
         }
     }
   };
@@ -29,10 +33,15 @@ const Feed = () => {
   useEffect(() => {
     getFeed();
   }, []);
-  if (!feed) return;
+  
+  if (!feed || feed.length <= 0)
+    return (
+      <div className="flex flex-col justify-center items-center h-screen">
+        <span className="text-4xl">🚀</span>
+        <h1 className="text-2xl text-gray-600 mt-2">No new users found!</h1>
+      </div>
+    );
 
-  if (feed.length <= 0)
-    return <h1 className="flex justify-center my-10">No new users founds!</h1>;
 
   return (
     feed && (
@@ -42,4 +51,6 @@ const Feed = () => {
     )
   );
 };
+
+
 export default Feed;

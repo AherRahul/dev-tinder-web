@@ -3,15 +3,17 @@ import { BASE_URL } from "../utils/constants";
 import { useDispatch, useSelector } from "react-redux";
 import { addRequests, removeRequest } from "../utils/requestSlice";
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const Requests = () => {
   const requests = useSelector((store) => store.requests);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const reviewRequest = async (status, _id) => {
     try {
       const res = axios.post(
-        BASE_URL + "/request/review/" + status + "/" + _id,
+        BASE_URL + "request/review/" + status + "/" + _id,
         {},
         { withCredentials: true }
       );
@@ -20,13 +22,24 @@ const Requests = () => {
   };
 
   const fetchRequests = async () => {
+    if (requests) return
     try {
       const res = await axios.get(BASE_URL + "user/request/received", {
         withCredentials: true,
       });
 
       dispatch(addRequests(res.data.data));
-    } catch (err) {}
+
+    } catch (err) {
+      if (err.status === 404) {
+        dispatch(addRequests([]));
+      } else if (err.status === 401) {
+        navigate("/login");
+      } else {
+        navigate("/error");
+        console.error(err);
+      }
+    }
   };
 
   useEffect(() => {
@@ -36,11 +49,16 @@ const Requests = () => {
   if (!requests) return;
 
   if (requests.length === 0)
-    return <h1 className="flex justify-center my-10"> No Requests Found</h1>;
+    return (
+      <div className="flex flex-col justify-center items-center h-screen">
+        <span className="text-4xl">🚀</span>
+        <h1 className="text-2xl text-gray-600 mt-2">No requests found!</h1>
+      </div>
+    );
 
   return (
     <div className="text-center my-10">
-      <h1 className="text-bold text-white text-3xl">Connection Requests</h1>
+      <h1 className="text-bold text-secondry text-3xl">Connection Requests</h1>
 
       {requests.map((request) => {
         const { _id, firstName, lastName, photo, age, gender, description } =

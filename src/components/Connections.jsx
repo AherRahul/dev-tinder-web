@@ -11,6 +11,8 @@ const Connections = () => {
 
   const fetchConnections = async () => {
     try {
+      if (connections) return;
+
       const res = await axios.get(BASE_URL + "user/connections", {
         withCredentials: true,
       });
@@ -27,11 +29,17 @@ const Connections = () => {
 
   if (!connections) return;
 
-  if (connections.length === 0) return <h1> No Connections Found</h1>;
+  if (connections.length === 0) 
+    return (
+      <div className="flex flex-col justify-center items-center h-screen">
+        <span className="text-4xl">🚀</span>
+        <h1 className="text-2xl text-gray-600 mt-2">No connections found!</h1>
+      </div>
+    );
 
   return (
     <div className="text-center my-10">
-      <h1 className="text-bold text-white text-3xl">Connections</h1>
+      <h1 className="text-bold text-secondry text-3xl">Connections</h1>
 
       {connections.map((connection) => {
         const { _id, firstName, lastName, photo, age, gender, description } =
@@ -45,7 +53,7 @@ const Connections = () => {
             <div>
               <img
                 alt="photo"
-                className="w-20 h-20 rounded-full object-cover"
+                className="w-20 h-20 rounded-3xl object-cover"
                 src={photo}
               />
             </div>
