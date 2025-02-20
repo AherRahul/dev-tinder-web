@@ -3,7 +3,7 @@ import Body from "./views/Body";
 import Login from "./views/Login";
 import Profile from "./views/Profile";
 import Error from "./views/Error";
-import Feed from "./Views/Feed";
+import Feed from "./views/Feed";
 import { Provider } from "react-redux";
 import { appStore } from "./utils/appStore";
 import Connections from "./components/Connections";
